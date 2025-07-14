@@ -5,6 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Text.Pandoc.Server
     ( app
+    , server
     , API
     , ServerOpts(..)
     , Params(..)

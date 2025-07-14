@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+
+@theme {
+
+--color-shiraz-50: #fff1f1;
+--color-shiraz-100: #ffe5e4;
+--color-shiraz-200: #fdced0;
+--color-shiraz-300: #fca5a8;
+--color-shiraz-400: #f9737a;
+--color-shiraz-500: #f14250;
+--color-shiraz-600: #de2038;
+--color-shiraz-700: #bb152d;
+--color-shiraz-800: #a3152f;
+--color-shiraz-900: #86152d;
+--color-shiraz-950: #4b0613;
+
+}

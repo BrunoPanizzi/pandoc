@@ -1,0 +1,318 @@
+---
+import Button from "../components/Button.astro";
+import Layout from "../layouts/layout.astro";
+
+import {
+  conversions,
+  decodeConversion,
+  displayName,
+  fromFormats,
+  toFormats,
+  type ConversionProps,
+} from "../services/ConversionSerivce";
+
+export function getStaticPaths(): ConversionProps[] {
+  return [
+    { params: { conversion: "md-html" } },
+    { params: { conversion: "html-md" } },
+  ];
+}
+
+const { conversion } = Astro.params;
+const { from, to } = decodeConversion[conversion];
+---
+
+<Layout title="Converter markdown para html">
+  <!-- Main Content -->
+  <main class="min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      <h2
+        class="text-3xl font-semibold font-serif text-zinc-800 dark:text-zinc-300"
+      >
+        Converter documento {displayName[from]} para {displayName[to]}
+      </h2>
+
+      <div class="mt-6 dark:text-zinc-300 text-zinc-700">
+        Tente também outras conversões:
+        <div class="flex flex-row gap-6 mt-2">
+          {
+            fromFormats.map((f) => (
+              <div>
+                <p class="font-semibold">{displayName[f]}</p>
+                {conversions
+                  .filter((c) => c.startsWith(f))
+                  .filter((c) => c !== conversion)
+                  .map((c) => (
+                    <p class="text-sm">
+                      <a
+                        href={`${c}`}
+                        class="text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        {displayName[decodeConversion[c].from]} para{" "}
+                        {displayName[decodeConversion[c].to]}
+                      </a>
+                    </p>
+                  ))}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Input/Output Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Input Section -->
+        <div class="">
+          <div class="flex justify-between items-center mb-4 gap-4">
+            <h3
+              class="text-lg font-medium text-zinc-900 dark:text-white border-b flex-1 dark:border-zinc-700 border-zinc-300 pb-2"
+            >
+              Escreva ou <label
+                class="text-fuchsia-900 dark:text-fuchsia-200 underline cursor-pointer"
+                for="file-input">escolha um arquivo</label
+              >
+            </h3>
+
+            <input
+              type="file"
+              id="file-input"
+              class="hidden"
+              accept=".txt,.md,.html"
+            />
+
+            <Button data-from={from} data-to={to} id="convert-btn">
+              Converter!
+            </Button>
+          </div>
+
+          <div>
+            <textarea
+              id="input-text"
+              placeholder="Cole ou escreva aqui..."
+              class="w-full h-96 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none font-mono text-sm"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="">
+          <div class="flex justify-between items-center gap-4 mb-4">
+            <h3
+              class="text-lg font-medium text-zinc-900 dark:text-white border-b flex-1 dark:border-zinc-700 border-zinc-300 pb-2"
+            >
+              Resultado
+            </h3>
+
+            <Button id="download-output"> Baixar como arquivo </Button>
+          </div>
+
+          <div>
+            <div
+              id="output-content"
+              class="w-full h-96 px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none font-mono text-sm overflow-auto whitespace-pre-wrap"
+            >
+              <!-- Converted content will appear here -->
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+              <div class="space-x-2">
+                <button
+                  id="copy-output"
+                  class="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-600 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+            <div class="mt-2">
+              <span
+                id="status-message"
+                class="text-sm text-zinc-500 dark:text-zinc-400"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    import type { From, To } from "../services/ConversionSerivce";
+
+    // Get DOM elements
+    const fileInput = document.getElementById("file-input") as HTMLInputElement;
+    const inputText = document.getElementById(
+      "input-text",
+    ) as HTMLTextAreaElement;
+    const convertBtn = document.getElementById("convert-btn");
+    const outputContent = document.getElementById("output-content");
+    const statusMessage = document.getElementById("status-message");
+    const copyBtn = document.getElementById("copy-output");
+    const downloadBtn = document.getElementById("download-output");
+
+    // Convert function placeholder
+    async function convert(input: string, from: From, to: To) {
+      // Placeholder for actual conversion logic
+      return new Promise<string>((resolve) => {
+        setTimeout(() => {
+          resolve(`Converted from ${from} to ${to}:\n\n${input}`);
+        }, 1000);
+      });
+    }
+
+    // File upload functionality
+    fileInput?.addEventListener("change", (e) => {
+      const file = e.target?.files?.[0];
+      if (file) {
+        if (statusMessage) statusMessage.textContent = "Reading file...";
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (inputText) {
+            inputText.value = e.target?.result;
+            if (statusMessage)
+              statusMessage.textContent = `File "${file.name}" loaded successfully`;
+          }
+        };
+        reader.onerror = () => {
+          if (statusMessage) statusMessage.textContent = "Error reading file";
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    // Convert button functionality
+    convertBtn?.addEventListener("click", async () => {
+      console.log("Convert button clicked");
+      const input = inputText?.value;
+
+      if (!input?.trim()) {
+        if (statusMessage)
+          statusMessage.textContent = "Please enter some content to convert";
+        return;
+      }
+
+      try {
+        if (statusMessage) statusMessage.textContent = "Converting...";
+
+        // Get conversion parameters from the page
+        const from = convertBtn.getAttribute("data-from") as From;
+        const to = convertBtn.getAttribute("data-to") as To;
+
+        const result = await convert(input, from, to);
+
+        if (outputContent) {
+          outputContent.textContent = result;
+        }
+        if (statusMessage)
+          statusMessage.textContent = "Conversion completed successfully";
+      } catch (error) {
+        if (statusMessage)
+          statusMessage.textContent = "Error during conversion";
+        console.error("Conversion error:", error);
+      }
+    });
+
+    // Copy functionality
+    copyBtn?.addEventListener("click", async () => {
+      const content = outputContent?.textContent;
+      if (!content?.trim()) {
+        if (statusMessage) statusMessage.textContent = "No content to copy";
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(content);
+        if (statusMessage)
+          statusMessage.textContent = "Content copied to clipboard";
+      } catch (error) {
+        // Fallback for older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = content;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand("copy");
+          if (statusMessage)
+            statusMessage.textContent = "Content copied to clipboard";
+        } catch (fallbackError) {
+          if (statusMessage)
+            statusMessage.textContent = "Failed to copy content";
+        }
+        document.body.removeChild(textArea);
+      }
+    });
+
+    // Download functionality
+    downloadBtn?.addEventListener("click", () => {
+      const content = outputContent?.textContent;
+      if (!content?.trim()) {
+        if (statusMessage) statusMessage.textContent = "No content to download";
+        return;
+      }
+
+      try {
+        const to = "${to}";
+        const mimeTypes = {
+          html: "text/html",
+          md: "text/markdown",
+          pdf: "application/pdf",
+        };
+
+        const mimeType = mimeTypes[to] || "text/plain";
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `converted.${to}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        if (statusMessage)
+          statusMessage.textContent = "File downloaded successfully";
+      } catch (error) {
+        if (statusMessage) statusMessage.textContent = "Error downloading file";
+        console.error("Download error:", error);
+      }
+    });
+
+    // Clear functionality (assuming you want to add a clear button)
+    // If you have a clear button, uncomment this:
+    /*
+    const clearBtn = document.getElementById("clear-btn");
+    clearBtn?.addEventListener("click", () => {
+      if (inputText) inputText.value = "";
+      if (outputContent) outputContent.textContent = "";
+      if (statusMessage) statusMessage.textContent = "";
+      if (fileInput) fileInput.value = "";
+    });
+    */
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", (e) => {
+      // Ctrl+Enter to convert
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        convertBtn?.click();
+      }
+
+      // Ctrl+C when output is focused to copy
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key === "c" &&
+        document.activeElement === outputContent
+      ) {
+        e.preventDefault();
+        copyBtn?.click();
+      }
+    });
+
+    // Initialize status message
+    if (statusMessage) {
+      statusMessage.textContent = "Ready to convert";
+    }
+  </script>
+</Layout>
