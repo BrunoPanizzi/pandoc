@@ -11,6 +11,7 @@ module Text.Pandoc.Server
     , Params(..)
     , Blob(..)
     , parseServerOptsFromArgs
+    , corsWithContentType
     ) where
 
 import Data.Aeson

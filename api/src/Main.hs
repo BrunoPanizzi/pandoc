@@ -6,24 +6,20 @@
 
 module Main where
 
-import Text.Pandoc.Server (API, server)
-import Data.Text
+import Text.Pandoc.Server (API, server, corsWithContentType)
 import Servant.API
 import Network.Wai.Handler.Warp
 import Servant
 
-type MyAPI =
-    API
-    :<|> "hello" :> Get '[PlainText] Text
-
+type MyAPI = "convert" :> API
 
 myApi :: Proxy MyAPI
 myApi = Proxy
 
 myServer :: Server MyAPI
-myServer = server :<|> return "hellow"
+myServer = server
 
 main :: IO ()
 main = do
     putStrLn "Starting the pandoc server..."
-    run 8080 (serve myApi myServer)
+    run 8080 $ corsWithContentType $ serve myApi myServer

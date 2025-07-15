@@ -13,8 +13,10 @@ import {
 
 export function getStaticPaths(): ConversionProps[] {
   return [
-    { params: { conversion: "md-html" } },
-    { params: { conversion: "html-md" } },
+    { params: { conversion: "markdown-html" } },
+    { params: { conversion: "html-markdown" } },
+    /*     { params: { conversion: "markdown-pdf" } },
+    { params: { conversion: "html-pdf" } }, */
   ];
 }
 
@@ -137,7 +139,7 @@ const { from, to } = decodeConversion[conversion];
   </main>
 
   <script>
-    import type { From, To } from "../services/ConversionSerivce";
+    import { type From, type To, convert } from "../services/ConversionSerivce";
 
     // Get DOM elements
     const fileInput = document.getElementById("file-input") as HTMLInputElement;
@@ -149,16 +151,6 @@ const { from, to } = decodeConversion[conversion];
     const statusMessage = document.getElementById("status-message");
     const copyBtn = document.getElementById("copy-output");
     const downloadBtn = document.getElementById("download-output");
-
-    // Convert function placeholder
-    async function convert(input: string, from: From, to: To) {
-      // Placeholder for actual conversion logic
-      return new Promise<string>((resolve) => {
-        setTimeout(() => {
-          resolve(`Converted from ${from} to ${to}:\n\n${input}`);
-        }, 1000);
-      });
-    }
 
     // File upload functionality
     fileInput?.addEventListener("change", (e) => {

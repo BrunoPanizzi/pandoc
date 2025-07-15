@@ -2,7 +2,7 @@ packages: .
           pandoc-lua-engine
           pandoc-server
           pandoc-cli
-          bruno-api
+          api
 tests: True
 flags: +embed_data_files
 constraints: skylighting-format-blaze-html >= 0.1.1.3,
