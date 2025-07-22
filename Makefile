@@ -332,3 +332,15 @@ release-checklist-$(VERSION).org: RELEASE-CHECKLIST-TEMPLATE.org
 hie.yaml: ## regenerate hie.yaml
 	gen-hie > $@
 .PHONY: hie.yaml
+
+docker-up: ## start services using docker compose
+	docker compose -f ./infra/docker-compose.yml up -d
+.PHONY: docker-up
+
+docker-down: ## stop docker compose services
+	docker compose -f ./infra/docker-compose.yml down
+.PHONY: docker-down
+
+docker-logs: ## show docker compose logs
+	docker compose -f ./infra/docker-compose.yml logs -f
+.PHONY: docker-logs

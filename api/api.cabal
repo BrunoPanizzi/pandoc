@@ -23,7 +23,15 @@ executable api
                       servant-server,
                       wai,
                       warp,
-                      pandoc-server
+                      pandoc-server,
+                      aeson,
+                      postgresql-simple,
+                      uuid,
+                      uuid-types,
+                      bcrypt,
+                      bytestring
+    
+    other-modules:    Models
 
     hs-source-dirs:   src
 
